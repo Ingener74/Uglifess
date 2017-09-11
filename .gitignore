@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+Qt/.idea/
+Qt/cmake-build-debug/
