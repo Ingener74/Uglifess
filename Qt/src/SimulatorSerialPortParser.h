@@ -2,9 +2,10 @@
 // Created by pavel on 11.09.17.
 //
 
-#ifndef UGLIFESS_SIMULATORSERIALPORTPARSER_H
-#define UGLIFESS_SIMULATORSERIALPORTPARSER_H
+#pragma once
 
+#include <QtCore/QMutex>
+#include <QtCore/QWaitCondition>
 
 #include "SerialPortParser.h"
 
@@ -21,10 +22,12 @@ public:
 
 	double getVoltage() const override;
 
+	void close() override;
+
 private:
 	double millis = 0.0;
 	double voltage = 2.4;
+
+	QMutex mutex;
+	QWaitCondition cond;
 };
-
-
-#endif //UGLIFESS_SIMULATORSERIALPORTPARSER_H

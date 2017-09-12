@@ -18,7 +18,7 @@ const char *const GEOMETRY = "geometry";
 
 const char *const SPLITTER_1 = "splitter1";
 
-MainWidget::MainWidget(QWidget * /*parent*/, const Qt::WindowFlags &f) : Ui::MainWidget() {
+MainWidget::MainWidget(QWidget* parent, const Qt::WindowFlags &f) : QWidget(parent, f), Ui::MainWidget() {
     setupUi(this);
 
     auto plotLayout = new QVBoxLayout();
@@ -32,10 +32,8 @@ MainWidget::MainWidget(QWidget * /*parent*/, const Qt::WindowFlags &f) : Ui::Mai
 
 void MainWidget::onConnectButtonClick() {
 	if (serialPortThread) {
-		disconnect(serialPortThread.get(),
-				   SIGNAL(onDataReady(DoubleVector, DoubleVector)),
-				   this,
-				   SLOT(onDataReady(DoubleVector, DoubleVector)));
+		disconnect(this, SLOT(onDataReady(DoubleVector, DoubleVector)));
+		disconnect(this, SLOT(onSerialFail(QString)));
 		serialPortThread.reset();
 		pushButtonConnect->setText("Connect");
 	} else {
@@ -46,6 +44,8 @@ void MainWidget::onConnectButtonClick() {
 		connect(serialPortThread.get(),
 				SIGNAL(onDataReady(DoubleVector, DoubleVector)),
 				SLOT(onDataReady(DoubleVector, DoubleVector)));
+
+		connect(serialPortThread.get(), SIGNAL(onFail(QString)), SLOT(onSerialFail(QString)));
 
 		serialPortThread->start();
 
@@ -70,6 +70,11 @@ void MainWidget::onSimulateCheckBoxChanged(int state) {
 	} else if (state == Qt::Unchecked) {
 		checkPorts();
 	}
+}
+
+void MainWidget::onSerialFail(QString text) {
+	QMessageBox::critical(this, "Error", text);
+	onConnectButtonClick();
 }
 
 void MainWidget::showEvent(QShowEvent *event) {
@@ -103,19 +108,17 @@ void MainWidget::keyPressEvent(QKeyEvent *event) {
 void MainWidget::checkPorts() {
     auto availablePorts = QSerialPortInfo::availablePorts();
     comboBoxSerialPort->clear();
-    for (auto &availablePort: availablePorts) {
-        comboBoxSerialPort->addItem(availablePort.portName(), availablePort.systemLocation());
-    }
+    for (auto &availablePort: availablePorts)
+		comboBoxSerialPort->addItem(availablePort.portName(), availablePort.systemLocation());
 
     const bool availablePortsEmpty = availablePorts.empty();
     pushButtonConnect->setEnabled(!availablePortsEmpty);
     comboBoxSerialPort->setEnabled(!availablePortsEmpty);
 
-    if (availablePortsEmpty) {
-        checkPortTimerId = startTimer(1000);
-    } else if (checkPortTimerId != ~0) {
-        killTimer(checkPortTimerId);
-    }
+    if (availablePortsEmpty)
+		checkPortTimerId = startTimer(1000);
+	else if (checkPortTimerId != ~0)
+		killTimer(checkPortTimerId);
 }
 
 void MainWidget::initPlot() const {
@@ -124,10 +127,8 @@ void MainWidget::initPlot() const {
 
     double xmin = -4.0, xmax = 4.0;
 
-    for (size_t i = 0; i < 100; ++i) {
-        x[i] = xmin + (xmax - xmin) * (i / 100.0);
-        y[i] = sin(x[i]);
-    }
+    for (size_t i = 0; i < 100; ++i)
+		y[i] = sin(x[i] = xmin + (xmax - xmin) * (i / 100.0));
 
     customPlot->addGraph();
     customPlot->graph(0)->setData(x, y);
@@ -137,8 +138,7 @@ void MainWidget::initPlot() const {
 	customPlot->yAxis->setLabel("Voltage, V");
 }
 
-void MainWidget::timerEvent(QTimerEvent* event)
-{
+void MainWidget::timerEvent(QTimerEvent* event) {
     QObject::timerEvent(event);
 
 	checkPorts();

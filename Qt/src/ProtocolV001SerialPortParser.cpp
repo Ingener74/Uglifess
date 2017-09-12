@@ -51,3 +51,8 @@ double ProtocolV001SerialPortParser::getTime() const {
 double ProtocolV001SerialPortParser::getVoltage() const {
 	return 0;
 }
+
+void ProtocolV001SerialPortParser::close()
+{
+	port.close();
+}

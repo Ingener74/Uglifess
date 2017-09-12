@@ -11,15 +11,19 @@
 class ProtocolV001SerialPortParser: public SerialPortParser
 {
 public:
-	ProtocolV001SerialPortParser(const QString& portName);
+	explicit ProtocolV001SerialPortParser(const QString& portName);
 
-private:
+	~ProtocolV001SerialPortParser() override = default;
+
 	bool read() override;
 
 	double getTime() const override;
 
 	double getVoltage() const override;
 
+	void close() override;
+
+protected:
 	QSerialPort port;
 	double time = 0, voltage = 0;
 };

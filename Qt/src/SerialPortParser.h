@@ -15,6 +15,7 @@ public:
 	virtual bool read() = 0;
 	virtual double getTime() const = 0;
 	virtual double getVoltage() const = 0;
+	virtual void close() = 0;
 };
 
 

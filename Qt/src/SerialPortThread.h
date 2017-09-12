@@ -23,6 +23,8 @@ public:
 Q_SIGNALS:
 	void onDataReady(DoubleVector, DoubleVector);
 
+	void onFail(QString);
+
 private:
 	void run() override;
 

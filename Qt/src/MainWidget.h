@@ -25,6 +25,8 @@ public slots:
 
 	void onSimulateCheckBoxChanged(int);
 
+	void onSerialFail(QString);
+
 protected:
     void showEvent(QShowEvent *event) override;
 
