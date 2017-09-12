@@ -10,6 +10,7 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5SerialPort REQUIRED)
 find_package(Qt5PrintSupport REQUIRED)
 include_directories(
+        ${CMAKE_BINARY_DIR}
         ${Qt5Widgets_INCLUDE_DIRS}
         ${Qt5Core_INCLUDE_DIRS}
         ${Qt5SerialPort_INCLUDE_DIRS}
@@ -34,7 +35,12 @@ set(UGLIFESS_SOURCES
         src/SerialPortThread.h
         src/qcustomplot.cpp
         src/qcustomplot.h
-        src/SerialPortParser.cpp src/SerialPortParser.h src/SimulatorSerialPortParser.cpp src/SimulatorSerialPortParser.h src/ProtocolV001SerialPortParser.cpp src/ProtocolV001SerialPortParser.h)
+        src/SerialPortParser.h
+        src/SimulatorSerialPortParser.cpp
+        src/SimulatorSerialPortParser.h
+        src/ProtocolV001SerialPortParser.cpp
+        src/ProtocolV001SerialPortParser.h
+        )
 
 if (MINGW)
     add_executable(Uglifess WIN32 ${UGLIFESS_SOURCES})

@@ -15,7 +15,7 @@ public:
 
 	virtual ~SimulatorSerialPortParser() = default;
 
-	void setData(const QByteArray& data) override;
+	bool read() override;
 
 	double getTime() const override;
 

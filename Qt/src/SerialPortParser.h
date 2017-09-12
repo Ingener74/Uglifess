@@ -12,7 +12,7 @@ class SerialPortParser
 {
 public:
 	virtual ~SerialPortParser() = default;
-	virtual void setData(const QByteArray& data) = 0;
+	virtual bool read() = 0;
 	virtual double getTime() const = 0;
 	virtual double getVoltage() const = 0;
 };

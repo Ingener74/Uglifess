@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include <QtWidgets/QApplication>
 #include "MainWidget.h"
 

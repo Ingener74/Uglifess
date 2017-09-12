@@ -2,8 +2,7 @@
 // Created by pavel on 11.09.17.
 //
 
-#ifndef QT_MAINWIDGET_H
-#define QT_MAINWIDGET_H
+#pragma once
 
 #include <memory>
 
@@ -20,10 +19,11 @@ public:
     MainWidget(QWidget *parent = nullptr, const Qt::WindowFlags &f = 0);
 
 public slots:
-
     void onConnectButtonClick();
 
     void onDataReady(DoubleVector, DoubleVector);
+
+	void onSimulateCheckBoxChanged(int);
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -32,13 +32,14 @@ protected:
 
     void keyPressEvent(QKeyEvent *event) override;
 
-    void checkPorts() const;
+	void timerEvent(QTimerEvent* event) override;
+
+	void checkPorts();
 
     void initPlot() const;
 
-    QCustomPlot *customPlot;
+    QCustomPlot *customPlot = nullptr;
     std::unique_ptr<SerialPortThread> serialPortThread;
+
+	int checkPortTimerId = ~0;
 };
-
-
-#endif //QT_MAINWIDGET_H

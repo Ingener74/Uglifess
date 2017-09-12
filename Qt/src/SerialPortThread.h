@@ -2,8 +2,7 @@
 // Created by pavel on 11.09.17.
 //
 
-#ifndef UGLIFESS_SERIALPORTTHREAD_H
-#define UGLIFESS_SERIALPORTTHREAD_H
+#pragma once
 
 #include <QtCore/QThread>
 #include <QtCore/QWaitCondition>
@@ -14,15 +13,14 @@ using DoubleVector = QVector<double>;
 
 class SerialPortParser;
 
-class SerialPortThread: public QThread
-{
+class SerialPortThread: public QThread {
 	Q_OBJECT
 public:
-	SerialPortThread(QObject* parent = nullptr, bool simulate = false);
+	SerialPortThread(QObject* parent, const QString& portName, bool simulate);
 
-	virtual ~SerialPortThread();
+	~SerialPortThread() override;
 
-signals:
+Q_SIGNALS:
 	void onDataReady(DoubleVector, DoubleVector);
 
 private:
@@ -34,6 +32,3 @@ private:
 	QMutex mutex;
 	QWaitCondition cond;
 };
-
-
-#endif //UGLIFESS_SERIALPORTTHREAD_H

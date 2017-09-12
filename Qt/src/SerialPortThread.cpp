@@ -8,11 +8,11 @@
 #include "SimulatorSerialPortParser.h"
 #include "ProtocolV001SerialPortParser.h"
 
-SerialPortThread::SerialPortThread(QObject *parent, bool simulate) : QThread(parent) {
+SerialPortThread::SerialPortThread(QObject* parent, const QString& portName, bool simulate) : QThread(parent) {
     if (simulate) {
         serialPortParser = std::make_unique<SimulatorSerialPortParser>();
     } else {
-        serialPortParser = std::make_unique<ProtocolV001SerialPortParser>();
+        serialPortParser = std::make_unique<ProtocolV001SerialPortParser>(portName);
     }
     work = 1;
 }
@@ -28,17 +28,17 @@ void SerialPortThread::run() {
             QMutexLocker locker(&mutex);
             cond.wait(&mutex, 100);
 
-            serialPortParser->setData({});
+            if (serialPortParser->read()) {
+                time.append(serialPortParser->getTime());
+                voltages.append(serialPortParser->getVoltage());
 
-            time.append(serialPortParser->getTime());
-            voltages.append(serialPortParser->getVoltage());
+                if (time.size() > 200)
+                    time.pop_front();
+                if (voltages.size() > 200)
+                    voltages.pop_front();
 
-            if (time.size() > 200)
-                time.pop_front();
-            if (voltages.size() > 200)
-                voltages.pop_front();
-
-            emit onDataReady(time, voltages);
+                emit onDataReady(time, voltages);
+            }
         }
     } catch (std::exception const &e) {
     }
