@@ -20,7 +20,9 @@ qt5_add_resources(UGLIFESS_RESOURCES res/resources.qrc)
 
 qt5_wrap_ui(UGLIFESS_UI res/mainwidget.ui)
 
-add_definitions(-fPIC)
+if (NOT MINGW)
+    add_definitions(-fPIC)
+endif()
 
 set(UGLIFESS_SOURCES
         ${UGLIFESS_RESOURCES}
@@ -34,5 +36,9 @@ set(UGLIFESS_SOURCES
         src/qcustomplot.h
         src/SerialPortParser.cpp src/SerialPortParser.h src/SimulatorSerialPortParser.cpp src/SimulatorSerialPortParser.h src/ProtocolV001SerialPortParser.cpp src/ProtocolV001SerialPortParser.h)
 
-add_executable(Uglifess ${UGLIFESS_SOURCES})
+if (MINGW)
+    add_executable(Uglifess WIN32 ${UGLIFESS_SOURCES})
+else()
+    add_executable(Uglifess ${UGLIFESS_SOURCES})
+endif()
 target_link_libraries(Uglifess Qt5::Widgets Qt5::Core Qt5::SerialPort Qt5::PrintSupport)
