@@ -16,7 +16,8 @@ SerialPortThread::SerialPortThread(QObject *parent, const QString &portName, boo
     if (simulate) {
         serialPortParser = std::make_unique<SimulatorSerialPortParser>();
     } else {
-        serialPortParser = std::make_unique<ProtocolV001SerialPortParser>(portName);
+        serialPortParser = std::make_unique<ProtocolV001SerialPortParser>(portName,
+                                                                          ProtocolV001SerialPortParser::Version::RegexSimple);
     }
     work = 1;
 }

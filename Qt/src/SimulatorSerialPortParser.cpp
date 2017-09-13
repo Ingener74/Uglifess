@@ -4,7 +4,7 @@
 
 #include "SimulatorSerialPortParser.h"
 
-const int SIMULATED_DELAY = 10;
+const int SIMULATED_DELAY = 33;
 
 SimulatorSerialPortParser::SimulatorSerialPortParser()
 {}
@@ -14,7 +14,7 @@ bool SimulatorSerialPortParser::read()
 	QMutexLocker locker(&mutex);
 	cond.wait(&mutex, SIMULATED_DELAY);
 	voltages.clear();
-	voltages.push_back({0.010, (qrand() % 1000) * 0.001 - 0.5});
+	voltages.push_back({timestamp += 0.033, 2.25 + (qrand() % 100) * 0.001 - 0.5});
 	return true;
 }
 

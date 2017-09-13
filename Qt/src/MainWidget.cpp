@@ -54,9 +54,13 @@ void MainWidget::onConnectButtonClick() {
 }
 
 void MainWidget::onDataReady(QVector<double> time, QVector<double> voltage) {
+    if (time.empty() || voltage.empty() || time.size() != voltage.size())
+        return;
+
     customPlot->xAxis->setRange(time.front(), time.back());
-    customPlot->yAxis->setRange(*std::min_element(voltage.begin(), voltage.end()),
-                                *std::max_element(voltage.begin(), voltage.end()));
+//    customPlot->yAxis->setRange(*std::min_element(voltage.begin(), voltage.end()),
+//                                *std::max_element(voltage.begin(), voltage.end()));
+    customPlot->yAxis->setRange(0, 3.5);
     customPlot->graph(0)->setData(time, voltage);
     customPlot->replot();
 }

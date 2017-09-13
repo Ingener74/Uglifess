@@ -15,7 +15,7 @@ class SimulatorSerialPortParser: public SerialPortParser
 public:
 	SimulatorSerialPortParser();
 
-	virtual ~SimulatorSerialPortParser() = default;
+	~SimulatorSerialPortParser() override = default;
 
 	bool read() override;
 
@@ -26,6 +26,7 @@ public:
 private:
 	QVector<VoltagePoint> voltages;
 
+	double timestamp;
 	QMutex mutex;
 	QWaitCondition cond;
 };
