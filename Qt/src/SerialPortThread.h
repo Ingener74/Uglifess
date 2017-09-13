@@ -13,24 +13,25 @@ using DoubleVector = QVector<double>;
 
 class SerialPortParser;
 
-class SerialPortThread: public QThread {
-	Q_OBJECT
+class SerialPortThread : public QThread {
+Q_OBJECT
 public:
-	SerialPortThread(QObject* parent, const QString& portName, bool simulate);
+    SerialPortThread(QObject *parent, const QString &portName, bool simulate);
 
-	~SerialPortThread() override;
+    ~SerialPortThread() override;
 
 Q_SIGNALS:
-	void onDataReady(DoubleVector, DoubleVector);
 
-	void onFail(QString);
+    void onDataReady(DoubleVector, DoubleVector);
+
+    void onFail(QString);
 
 private:
-	void run() override;
+    void run() override;
 
-	std::unique_ptr<SerialPortParser> serialPortParser;
+    std::unique_ptr<SerialPortParser> serialPortParser;
 
-	QAtomicInt work;
-	QMutex mutex;
-	QWaitCondition cond;
+    QAtomicInt work;
+    QMutex mutex;
+    QWaitCondition cond;
 };

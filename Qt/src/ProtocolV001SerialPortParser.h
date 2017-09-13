@@ -17,13 +17,12 @@ public:
 
 	bool read() override;
 
-	double getTime() const override;
-
-	double getVoltage() const override;
+	QVector<VoltagePoint> getVoltages() const override;
 
 	void close() override;
 
 protected:
 	QSerialPort port;
-	double time = 0, voltage = 0;
+	QByteArray temp;
+	QVector<VoltagePoint> voltagesPoints;
 };

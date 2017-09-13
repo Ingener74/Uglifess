@@ -6,6 +6,7 @@
 
 #include <QtCore/QMutex>
 #include <QtCore/QWaitCondition>
+#include <QtCore/QVector>
 
 #include "SerialPortParser.h"
 
@@ -18,15 +19,12 @@ public:
 
 	bool read() override;
 
-	double getTime() const override;
-
-	double getVoltage() const override;
+	QVector<VoltagePoint> getVoltages() const override;
 
 	void close() override;
 
 private:
-	double millis = 0.0;
-	double voltage = 2.4;
+	QVector<VoltagePoint> voltages;
 
 	QMutex mutex;
 	QWaitCondition cond;

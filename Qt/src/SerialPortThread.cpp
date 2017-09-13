@@ -12,7 +12,7 @@
 
 const int NUMBER_OF_MEASUREMENT = 200;
 
-SerialPortThread::SerialPortThread(QObject* parent, const QString& portName, bool simulate) : QThread(parent) {
+SerialPortThread::SerialPortThread(QObject *parent, const QString &portName, bool simulate) : QThread(parent) {
     if (simulate) {
         serialPortParser = std::make_unique<SimulatorSerialPortParser>();
     } else {
@@ -30,12 +30,16 @@ void SerialPortThread::run() {
 
         while (work) {
             if (serialPortParser->read()) {
-                time.append(serialPortParser->getTime());
-                voltages.append(serialPortParser->getVoltage());
+                auto newVoltages = serialPortParser->getVoltages();
 
-                if (time.size() > NUMBER_OF_MEASUREMENT)
+                for (auto &voltage: newVoltages) {
+                    time.push_back(voltage.timestamp);
+                    voltages.push_back(voltage.voltage);
+                }
+
+                while (time.size() > NUMBER_OF_MEASUREMENT)
                     time.pop_front();
-                if (voltages.size() > NUMBER_OF_MEASUREMENT)
+                while (voltages.size() > NUMBER_OF_MEASUREMENT)
                     voltages.pop_front();
 
                 emit onDataReady(time, voltages);

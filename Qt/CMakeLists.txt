@@ -43,7 +43,8 @@ set(UGLIFESS_SOURCES
         )
 
 if (MINGW)
-    add_executable(Uglifess WIN32 ${UGLIFESS_SOURCES})
+#    add_executable(Uglifess WIN32 ${UGLIFESS_SOURCES})
+    add_executable(Uglifess ${UGLIFESS_SOURCES})
 else()
     add_executable(Uglifess ${UGLIFESS_SOURCES})
 endif()

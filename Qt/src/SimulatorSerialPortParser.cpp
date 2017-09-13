@@ -13,22 +13,16 @@ bool SimulatorSerialPortParser::read()
 {
 	QMutexLocker locker(&mutex);
 	cond.wait(&mutex, SIMULATED_DELAY);
-	millis += 0.010;
-	voltage += (qrand() % 1000) * 0.001 - 0.5;
+	voltages.clear();
+	voltages.push_back({0.010, (qrand() % 1000) * 0.001 - 0.5});
 	return true;
-}
-
-double SimulatorSerialPortParser::getTime() const
-{
-	return millis;
-}
-
-double SimulatorSerialPortParser::getVoltage() const
-{
-	return voltage;
 }
 
 void SimulatorSerialPortParser::close()
 {
 	cond.wakeOne();
+}
+
+QVector<VoltagePoint> SimulatorSerialPortParser::getVoltages() const {
+	return voltages;
 }
