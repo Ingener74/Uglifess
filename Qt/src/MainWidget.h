@@ -21,11 +21,17 @@ public:
 public slots:
     void onConnectButtonClick();
 
+	void onUpdateClick();
+
     void onDataReady(DoubleVector, DoubleVector);
 
 	void onSimulateCheckBoxChanged(int);
 
+	void onAutoRangesChanged(int);
+
 	void onSerialFail(QString);
+
+	void onRangesChanged(double);
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -38,10 +44,14 @@ protected:
 
 	void checkPorts();
 
-    void initPlot() const;
+    void initPlot();
+
+	void replot();
 
     QCustomPlot *customPlot = nullptr;
     std::unique_ptr<SerialPortThread> serialPortThread;
+
+	QVector<double> x, y;
 
 	int checkPortTimerId = ~0;
 };

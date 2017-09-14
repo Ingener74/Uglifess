@@ -18,6 +18,8 @@ class SerialPortParser
 public:
 	virtual ~SerialPortParser() = default;
 
+	virtual void setUpdateTimeMs(int updateTime) = 0;
+
 	virtual bool read() = 0;
 
 	virtual QVector<VoltagePoint> getVoltages() const = 0;

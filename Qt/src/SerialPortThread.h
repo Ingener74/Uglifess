@@ -20,6 +20,9 @@ public:
 
     ~SerialPortThread() override;
 
+public slots:
+	void setUpdateTimeMs(int updateTime);
+
 Q_SIGNALS:
 
     void onDataReady(DoubleVector, DoubleVector);
@@ -30,8 +33,5 @@ private:
     void run() override;
 
     std::unique_ptr<SerialPortParser> serialPortParser;
-
     QAtomicInt work;
-    QMutex mutex;
-    QWaitCondition cond;
 };

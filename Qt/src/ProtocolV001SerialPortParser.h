@@ -21,6 +21,8 @@ public:
 
 	~ProtocolV001SerialPortParser() override = default;
 
+	void setUpdateTimeMs(int updateTime) override;
+
 	bool read() override;
 
 	QVector<VoltagePoint> getVoltages() const override;

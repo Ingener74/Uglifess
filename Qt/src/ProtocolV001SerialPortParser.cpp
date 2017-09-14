@@ -17,17 +17,27 @@ const double MAX_ANALOG_READ_VALUE = 4096.0;
 ProtocolV001SerialPortParser::ProtocolV001SerialPortParser(const QString &portName, Version version): version(version) {
 	if (version == Version::RegexSimple)
 		regularExpression = QRegularExpression("(?<T>\\d+) (?<U>\\d+)\r?\n?");
+	else if (version == Version::RegexComplex)
+		regularExpression = QRegularExpression("(?<T>T\\d+) (?<U>U\\d+)\r\n");
 
     qDebug() << portName;
     port.setPortName(portName);
-    if (port.open(QIODevice::OpenModeFlag::ReadOnly)) {
+    if (port.open(QIODevice::OpenModeFlag::ReadWrite)) {
         port.setBaudRate(QSerialPort::Baud115200);
         port.setDataBits(QSerialPort::Data8);
         port.setParity(QSerialPort::NoParity);
         port.setStopBits(QSerialPort::OneStop);
         port.setFlowControl(QSerialPort::NoFlowControl);
         port.setDataTerminalReady(true);
-    }
+	}
+}
+
+void ProtocolV001SerialPortParser::setUpdateTimeMs(int updateTime)
+{
+	if (!port.isOpen())
+		return;
+	port.write(QString("delay %1").arg(updateTime).toLocal8Bit());
+	port.flush();
 }
 
 bool ProtocolV001SerialPortParser::read() {
@@ -35,6 +45,8 @@ bool ProtocolV001SerialPortParser::read() {
         return false;
 
     voltagesPoints.clear();
+
+	port.clear();
 
     if (port.waitForReadyRead(READ_WAIT_TIMEOUT)) {
 
@@ -48,8 +60,6 @@ bool ProtocolV001SerialPortParser::read() {
 			case Version::RegexSimple: parseV2(data); break;
 			case Version::RegexComplex: parseV3(data); break;
 		}
-
-        port.clear();
 
         return true;
     }
@@ -120,6 +130,7 @@ void ProtocolV001SerialPortParser::parseV2(const QByteArray& data)
 {
 	int end = -1;
 	temp += data;
+	qDebug() << "#" << temp << "#";
 	auto matchIt = regularExpression.globalMatch(temp);
 	while (matchIt.hasNext()) {
 		auto match = matchIt.next();
@@ -137,12 +148,15 @@ void ProtocolV001SerialPortParser::parseV2(const QByteArray& data)
 
 void ProtocolV001SerialPortParser::parseV3(const QByteArray& data)
 {
-	temp += data;
-    QRegularExpression re("T(\\d+) U(\\d+)\r?\n?");
-    auto match = re.match(temp);
-	if (match.hasMatch()) {
-		qDebug() << match;
-		1;
-	} else {
+	auto matchIt = regularExpression.globalMatch(data);
+	while (matchIt.hasNext()) {
+		auto match = matchIt.next();
+		if (match.hasMatch()) {
+			const QString& TStr = match.captured("T");
+			double T = TStr.right(TStr.size() - 1).toDouble() / MILLISECONDS_IN_SEDOND;
+			const QString& UStr = match.captured("U");
+			double U = UStr.right(UStr.size() - 1).toDouble() * VREF_VOLTAGE / MAX_ANALOG_READ_VALUE;
+			voltagesPoints.push_back({T, U});
+		}
 	}
 }

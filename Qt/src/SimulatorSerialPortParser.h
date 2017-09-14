@@ -17,6 +17,8 @@ public:
 
 	~SimulatorSerialPortParser() override = default;
 
+	void setUpdateTimeMs(int updateTime) override;
+
 	bool read() override;
 
 	QVector<VoltagePoint> getVoltages() const override;
@@ -26,7 +28,8 @@ public:
 private:
 	QVector<VoltagePoint> voltages;
 
-	double timestamp;
+	int delay = 0;
+	double timestamp = 0.0;
 	QMutex mutex;
 	QWaitCondition cond;
 };

@@ -17,9 +17,14 @@ SerialPortThread::SerialPortThread(QObject *parent, const QString &portName, boo
         serialPortParser = std::make_unique<SimulatorSerialPortParser>();
     } else {
         serialPortParser = std::make_unique<ProtocolV001SerialPortParser>(portName,
-                                                                          ProtocolV001SerialPortParser::Version::RegexSimple);
+                                                                          ProtocolV001SerialPortParser::Version::RegexComplex);
     }
     work = 1;
+}
+
+void SerialPortThread::setUpdateTimeMs(int updateTime)
+{
+	serialPortParser->setUpdateTimeMs(updateTime);
 }
 
 void SerialPortThread::run() {
