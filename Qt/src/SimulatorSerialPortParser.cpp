@@ -2,10 +2,13 @@
 // Created by pavel on 11.09.17.
 //
 
+#include <QtCore/QDateTime>
 #include "SimulatorSerialPortParser.h"
 
-SimulatorSerialPortParser::SimulatorSerialPortParser()
-{}
+SimulatorSerialPortParser::SimulatorSerialPortParser(int delay): delay(delay)
+{
+	qsrand(static_cast<uint>(QDateTime::currentSecsSinceEpoch()));
+}
 
 void SimulatorSerialPortParser::setUpdateTimeMs(int updateTime)
 {

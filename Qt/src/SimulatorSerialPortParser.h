@@ -13,7 +13,7 @@
 class SimulatorSerialPortParser: public SerialPortParser
 {
 public:
-	SimulatorSerialPortParser();
+	SimulatorSerialPortParser(int delay);
 
 	~SimulatorSerialPortParser() override = default;
 
@@ -28,7 +28,7 @@ public:
 private:
 	QVector<VoltagePoint> voltages;
 
-	int delay = 0;
+	int delay = 100;
 	double timestamp = 0.0;
 	QMutex mutex;
 	QWaitCondition cond;

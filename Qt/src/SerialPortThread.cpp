@@ -8,29 +8,27 @@
 
 #include "SerialPortThread.h"
 #include "SimulatorSerialPortParser.h"
-#include "ProtocolV001SerialPortParser.h"
+#include "RealSerialPortParser.h"
 
 const int NUMBER_OF_MEASUREMENT = 200;
 
-SerialPortThread::SerialPortThread(QObject *parent, const QString &portName, bool simulate) : QThread(parent) {
+SerialPortThread::SerialPortThread(QObject* parent, const QString& portName, bool simulate, int delay) : QThread(parent) {
     if (simulate) {
-        serialPortParser = std::make_unique<SimulatorSerialPortParser>();
+        serialPortParser = std::make_unique<SimulatorSerialPortParser>(delay);
     } else {
-        serialPortParser = std::make_unique<ProtocolV001SerialPortParser>(portName,
-                                                                          ProtocolV001SerialPortParser::Version::RegexComplex);
+        serialPortParser = std::make_unique<RealSerialPortParser>(portName,
+                                                                          RealSerialPortParser::Version::RegexComplex,
+                                                                          delay);
     }
     work = 1;
 }
 
-void SerialPortThread::setUpdateTimeMs(int updateTime)
-{
+void SerialPortThread::setUpdateTimeMs(int updateTime) {
 	serialPortParser->setUpdateTimeMs(updateTime);
 }
 
 void SerialPortThread::run() {
     try {
-        qsrand(static_cast<uint>(QDateTime::currentSecsSinceEpoch()));
-
         QVector<double> time;
         QVector<double> voltages;
 
@@ -52,7 +50,7 @@ void SerialPortThread::run() {
             }
         }
     } catch (std::exception const &e) {
-        qDebug() << e.what();
+        qWarning() << e.what();
         emit onFail(e.what());
     }
 }

@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <QtCore/QDebug>
-#include "ProtocolV001SerialPortParser.h"
+#include "RealSerialPortParser.h"
 
 const int READ_WAIT_TIMEOUT = 500;
 
@@ -14,8 +14,8 @@ const double VREF_VOLTAGE = 3.3;
 
 const double MAX_ANALOG_READ_VALUE = 4096.0;
 
-ProtocolV001SerialPortParser::ProtocolV001SerialPortParser(const QString &portName, Version version) : version(
-        version) {
+RealSerialPortParser::RealSerialPortParser(const QString& portName, Version version, int /*delay*/)
+        : version(version) {
     if (version == Version::RegexSimple)
         regularExpression = QRegularExpression("(?<T>\\d+) (?<U>\\d+)\r?\n?");
     else if (version == Version::RegexComplex)
@@ -33,14 +33,14 @@ ProtocolV001SerialPortParser::ProtocolV001SerialPortParser(const QString &portNa
     }
 }
 
-void ProtocolV001SerialPortParser::setUpdateTimeMs(int updateTime) {
+void RealSerialPortParser::setUpdateTimeMs(int updateTime) {
     if (!port.isOpen())
         return;
     port.write(QString("delay %1").arg(updateTime).toLocal8Bit());
     port.flush();
 }
 
-bool ProtocolV001SerialPortParser::read() {
+bool RealSerialPortParser::read() {
     if (!port.isOpen())
         return false;
 
@@ -72,15 +72,15 @@ bool ProtocolV001SerialPortParser::read() {
     return false;
 }
 
-void ProtocolV001SerialPortParser::close() {
+void RealSerialPortParser::close() {
     port.close();
 }
 
-QVector<VoltagePoint> ProtocolV001SerialPortParser::getVoltages() const {
+QVector<VoltagePoint> RealSerialPortParser::getVoltages() const {
     return voltagesPoints;
 }
 
-void ProtocolV001SerialPortParser::parseV1(const QByteArray &data) {
+void RealSerialPortParser::parseV1(const QByteArray &data) {
     qDebug() << ">" << data << "<";
 
     temp += data;
@@ -132,7 +132,7 @@ void ProtocolV001SerialPortParser::parseV1(const QByteArray &data) {
         temp = temp.right(len);
 }
 
-void ProtocolV001SerialPortParser::parseV2(const QByteArray &data) {
+void RealSerialPortParser::parseV2(const QByteArray &data) {
     int end = -1;
     temp += data;
     qDebug() << "#" << temp << "#";
@@ -151,7 +151,7 @@ void ProtocolV001SerialPortParser::parseV2(const QByteArray &data) {
         temp = temp.right(temp.size() - end);
 }
 
-void ProtocolV001SerialPortParser::parseV3(const QByteArray &data) {
+void RealSerialPortParser::parseV3(const QByteArray &data) {
     qDebug() << "#" << data << "#";
     auto matchIt = regularExpression.globalMatch(data);
     while (matchIt.hasNext()) {

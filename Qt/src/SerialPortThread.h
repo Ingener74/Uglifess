@@ -16,7 +16,7 @@ class SerialPortParser;
 class SerialPortThread : public QThread {
 Q_OBJECT
 public:
-    SerialPortThread(QObject *parent, const QString &portName, bool simulate);
+    SerialPortThread(QObject* parent, const QString& portName, bool simulate, int delay);
 
     ~SerialPortThread() override;
 

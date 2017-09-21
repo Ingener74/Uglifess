@@ -38,8 +38,8 @@ set(UGLIFESS_SOURCES
         src/SerialPortParser.h
         src/SimulatorSerialPortParser.cpp
         src/SimulatorSerialPortParser.h
-        src/ProtocolV001SerialPortParser.cpp
-        src/ProtocolV001SerialPortParser.h
+        src/RealSerialPortParser.cpp
+        src/RealSerialPortParser.h
         )
 
 if (MINGW)

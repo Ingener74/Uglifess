@@ -13,14 +13,17 @@ void qtMessageHandler(QtMsgType, const QMessageLogContext &, const QString &mess
 
 int main(int argc, char *argv[]) {
     QApplication application(argc, argv);
+    try {
+        qInstallMessageHandler(qtMessageHandler);
 
-    qInstallMessageHandler(qtMessageHandler);
+        qRegisterMetaType<DoubleVector>("DoubleVector");
 
-    qRegisterMetaType<DoubleVector>("DoubleVector");
+        MainWidget mainWidget;
+        ::mainWidget = &mainWidget;
+        mainWidget.show();
 
-    MainWidget mainWidget;
-    ::mainWidget = &mainWidget;
-    mainWidget.show();
-
-    return application.exec();
+        return application.exec();
+    } catch(std::exception const& e) {
+        QMessageBox::critical(nullptr, "Error", QString("Caught exception {}").arg(e.what()));
+    }
 }

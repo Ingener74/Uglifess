@@ -28,6 +28,8 @@ const char *const Y_MAX = "YMax";
 
 const int NUMBER_OF_POINTS = 100;
 
+const char* const DELAY = "DELAY";
+
 MainWidget::MainWidget(QWidget *parent, const Qt::WindowFlags &f) : QWidget(parent, f), Ui::MainWidget() {
     setupUi(this);
 
@@ -53,7 +55,8 @@ void MainWidget::onConnectButtonClick() {
     } else {
         serialPortThread = std::make_unique<SerialPortThread>(nullptr,
                                                               comboBoxSerialPort->currentData().toString(),
-                                                              checkBoxSimulate->isChecked());
+                                                              checkBoxSimulate->isChecked(),
+                                                              spinBoxUpdateDelay->value());
 
         connect(serialPortThread.get(),
                 SIGNAL(onDataReady(DoubleVector, DoubleVector)),
@@ -127,6 +130,8 @@ void MainWidget::showEvent(QShowEvent *event) {
         doubleSpinBoxUMin->setValue(settings.value(Y_MIN).toDouble());
     if (settings.contains(Y_MAX))
         doubleSpinBoxUMax->setValue(settings.value(Y_MAX).toDouble());
+	if (settings.contains(DELAY))
+		spinBoxUpdateDelay->setValue(settings.value(DELAY).toInt());
 }
 
 void MainWidget::closeEvent(QCloseEvent *event) {
@@ -137,6 +142,7 @@ void MainWidget::closeEvent(QCloseEvent *event) {
     settings.setValue(SPLITTER_1, splitter->saveState());
     settings.setValue(Y_MIN, doubleSpinBoxUMin->value());
     settings.setValue(Y_MAX, doubleSpinBoxUMax->value());
+	settings.setValue(DELAY, spinBoxUpdateDelay->value());
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *event) {
@@ -198,7 +204,7 @@ void MainWidget::replot() {
         customPlot->yAxis->setRange(doubleSpinBoxUMin->value(), doubleSpinBoxUMax->value());
     }
 
-    customPlot->xAxis->setLabel("Time, sec");
+    customPlot->xAxis->setLabel("Time, msec");
     customPlot->yAxis->setLabel("Voltage, V");
     customPlot->replot();
 }

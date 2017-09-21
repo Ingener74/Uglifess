@@ -8,7 +8,7 @@
 #include <QtCore/QRegularExpression>
 #include "SerialPortParser.h"
 
-class ProtocolV001SerialPortParser: public SerialPortParser
+class RealSerialPortParser: public SerialPortParser
 {
 public:
 	enum class Version {
@@ -17,9 +17,9 @@ public:
 		RegexComplex,
 	};
 
-	explicit ProtocolV001SerialPortParser(const QString& portName, Version);
+	explicit RealSerialPortParser(const QString& portName, Version, int delay);
 
-	~ProtocolV001SerialPortParser() override = default;
+	~RealSerialPortParser() override = default;
 
 	void setUpdateTimeMs(int updateTime) override;
 
