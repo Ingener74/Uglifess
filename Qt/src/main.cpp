@@ -2,14 +2,25 @@
 #include <QtWidgets/QApplication>
 #include "MainWidget.h"
 
-int main(int argc, char* argv[])
-{
-	QApplication application(argc, argv);
+MainWidget *mainWidget = nullptr;
 
-	qRegisterMetaType<DoubleVector>("DoubleVector");
+void qtMessageHandler(QtMsgType, const QMessageLogContext &, const QString &message) {
+    if (!mainWidget)
+        return;
 
-	MainWidget mainWidget;
-	mainWidget.show();
+    mainWidget->addLogMessage(message);
+}
 
-	return application.exec();
+int main(int argc, char *argv[]) {
+    QApplication application(argc, argv);
+
+    qInstallMessageHandler(qtMessageHandler);
+
+    qRegisterMetaType<DoubleVector>("DoubleVector");
+
+    MainWidget mainWidget;
+    ::mainWidget = &mainWidget;
+    mainWidget.show();
+
+    return application.exec();
 }

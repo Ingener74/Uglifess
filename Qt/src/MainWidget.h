@@ -33,6 +33,8 @@ public slots:
 
 	void onRangesChanged(double);
 
+	void addLogMessage(const QString& text);
+
 protected:
     void showEvent(QShowEvent *event) override;
 

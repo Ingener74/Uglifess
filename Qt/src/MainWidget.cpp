@@ -10,6 +10,10 @@
 
 #include "MainWidget.h"
 
+/*
+ * If qDebug not working answer here https://stackoverflow.com/questions/34355549/qdebug-doesnt-print-anything
+ */
+
 const char *const COMPANY = "ShnaiderPavel";
 
 const char *const PROGRAM = "Uglifess";
@@ -18,11 +22,11 @@ const char *const GEOMETRY = "geometry";
 
 const char *const SPLITTER_1 = "splitter1";
 
-const char* const Y_MIN = "YMin";
+const char *const Y_MIN = "YMin";
 
-const char* const Y_MAX = "YMax";
+const char *const Y_MAX = "YMax";
 
-const int POINTS = 100;
+const int NUMBER_OF_POINTS = 100;
 
 MainWidget::MainWidget(QWidget *parent, const Qt::WindowFlags &f) : QWidget(parent, f), Ui::MainWidget() {
     setupUi(this);
@@ -33,11 +37,11 @@ MainWidget::MainWidget(QWidget *parent, const Qt::WindowFlags &f) : QWidget(pare
     groupBoxPlot->setLayout(plotLayout);
 
     connect(pushButtonConnect, SIGNAL(clicked()), SLOT(onConnectButtonClick()));
-	connect(pushButtonUpdate, SIGNAL(clicked()), SLOT(onUpdateClick()));
+    connect(pushButtonUpdate, SIGNAL(clicked()), SLOT(onUpdateClick()));
     connect(checkBoxSimulate, SIGNAL(stateChanged(int)), SLOT(onSimulateCheckBoxChanged(int)));
-	connect(checkBoxAutoRanges, SIGNAL(stateChanged(int)), SLOT(onAutoRangesChanged(int)));
-	connect(doubleSpinBoxUMin, SIGNAL(valueChanged(double)), SLOT(onRangesChanged(double)));
-	connect(doubleSpinBoxUMax, SIGNAL(valueChanged(double)), SLOT(onRangesChanged(double)));
+    connect(checkBoxAutoRanges, SIGNAL(stateChanged(int)), SLOT(onAutoRangesChanged(int)));
+    connect(doubleSpinBoxUMin, SIGNAL(valueChanged(double)), SLOT(onRangesChanged(double)));
+    connect(doubleSpinBoxUMax, SIGNAL(valueChanged(double)), SLOT(onRangesChanged(double)));
 }
 
 void MainWidget::onConnectButtonClick() {
@@ -63,19 +67,18 @@ void MainWidget::onConnectButtonClick() {
     }
 }
 
-void MainWidget::onUpdateClick()
-{
-	serialPortThread->setUpdateTimeMs(spinBoxUpdateDelay->value());
+void MainWidget::onUpdateClick() {
+    serialPortThread->setUpdateTimeMs(spinBoxUpdateDelay->value());
 }
 
 void MainWidget::onDataReady(QVector<double> time, QVector<double> voltage) {
     if (time.empty() || voltage.empty() || time.size() != voltage.size())
         return;
 
-	x = time;
-	y = voltage;
+    x = time;
+    y = voltage;
 
-	replot();
+    replot();
 }
 
 void MainWidget::onSimulateCheckBoxChanged(int state) {
@@ -89,16 +92,10 @@ void MainWidget::onSimulateCheckBoxChanged(int state) {
     }
 }
 
-void MainWidget::onAutoRangesChanged(int state)
-{
-	if (state == Qt::Checked) {
-	} else if (state == Qt::Unchecked) {
-	}
-
-	doubleSpinBoxUMax->setEnabled(state == Qt::Unchecked);
-	doubleSpinBoxUMin->setEnabled(state == Qt::Unchecked);
-
-	replot();
+void MainWidget::onAutoRangesChanged(int state) {
+    doubleSpinBoxUMax->setEnabled(state == Qt::Unchecked);
+    doubleSpinBoxUMin->setEnabled(state == Qt::Unchecked);
+    replot();
 }
 
 void MainWidget::onSerialFail(QString text) {
@@ -106,9 +103,12 @@ void MainWidget::onSerialFail(QString text) {
     onConnectButtonClick();
 }
 
-void MainWidget::onRangesChanged(double)
-{
-	replot();
+void MainWidget::onRangesChanged(double) {
+    replot();
+}
+
+void MainWidget::addLogMessage(const QString &text) {
+    textEditLog->append(text);
 }
 
 void MainWidget::showEvent(QShowEvent *event) {
@@ -123,10 +123,10 @@ void MainWidget::showEvent(QShowEvent *event) {
         restoreGeometry(settings.value(GEOMETRY).toByteArray());
     if (settings.contains(SPLITTER_1))
         splitter->restoreState(settings.value(SPLITTER_1).toByteArray());
-	if (settings.contains(Y_MIN))
-		doubleSpinBoxUMin->setValue(settings.value(Y_MIN).toDouble());
-	if (settings.contains(Y_MAX))
-		doubleSpinBoxUMax->setValue(settings.value(Y_MAX).toDouble());
+    if (settings.contains(Y_MIN))
+        doubleSpinBoxUMin->setValue(settings.value(Y_MIN).toDouble());
+    if (settings.contains(Y_MAX))
+        doubleSpinBoxUMax->setValue(settings.value(Y_MAX).toDouble());
 }
 
 void MainWidget::closeEvent(QCloseEvent *event) {
@@ -135,8 +135,8 @@ void MainWidget::closeEvent(QCloseEvent *event) {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, COMPANY, PROGRAM);
     settings.setValue(GEOMETRY, saveGeometry());
     settings.setValue(SPLITTER_1, splitter->saveState());
-	settings.setValue(Y_MIN, doubleSpinBoxUMin->value());
-	settings.setValue(Y_MAX, doubleSpinBoxUMax->value());
+    settings.setValue(Y_MIN, doubleSpinBoxUMin->value());
+    settings.setValue(Y_MAX, doubleSpinBoxUMax->value());
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *event) {
@@ -146,9 +146,9 @@ void MainWidget::keyPressEvent(QKeyEvent *event) {
 }
 
 void MainWidget::timerEvent(QTimerEvent *event) {
-	QObject::timerEvent(event);
+    QObject::timerEvent(event);
 
-	checkPorts();
+    checkPorts();
 }
 
 void MainWidget::checkPorts() {
@@ -163,41 +163,42 @@ void MainWidget::checkPorts() {
 
     if (availablePortsEmpty)
         checkPortTimerId = startTimer(1000);
-    else if (checkPortTimerId != ~0)
+    else if (checkPortTimerId != ~0) {
         killTimer(checkPortTimerId);
+        checkPortTimerId = ~0;
+    }
 }
 
 void MainWidget::initPlot() {
     double xmin = -4.0, xmax = 4.0;
 
-	x.resize(POINTS);
-	y.resize(POINTS);
+    x.resize(NUMBER_OF_POINTS);
+    y.resize(NUMBER_OF_POINTS);
 
-    for (size_t i = 0; i < POINTS; ++i)
+    for (size_t i = 0; i < NUMBER_OF_POINTS; ++i)
         y[i] = sin(x[i] = xmin + (xmax - xmin) * (i / 100.0));
 
     customPlot->addGraph();
 
-	replot();
+    replot();
 }
 
-void MainWidget::replot()
-{
-	customPlot->graph(0)->setData(x, y);
-	customPlot->xAxis->setRange(x.front(), x.back());
+void MainWidget::replot() {
+    customPlot->graph(0)->setData(x, y);
+    customPlot->xAxis->setRange(x.front(), x.back());
 
-	if (checkBoxAutoRanges->checkState() == Qt::Checked) {
-		const double ymin = *std::min_element(y.begin(), y.end());
-		const double ymax = *std::max_element(y.begin(), y.end());
-		doubleSpinBoxUMin->setValue(ymin);
-		doubleSpinBoxUMax->setValue(ymax);
-		customPlot->yAxis->setRange(ymin, ymax);
-		
-	} else {
-		customPlot->yAxis->setRange(doubleSpinBoxUMin->value(), doubleSpinBoxUMax->value());
-	}
+    if (checkBoxAutoRanges->checkState() == Qt::Checked) {
+        const double ymin = *std::min_element(y.begin(), y.end());
+        const double ymax = *std::max_element(y.begin(), y.end());
+        doubleSpinBoxUMin->setValue(ymin);
+        doubleSpinBoxUMax->setValue(ymax);
+        customPlot->yAxis->setRange(ymin, ymax);
 
-	customPlot->xAxis->setLabel("Time, sec");
-	customPlot->yAxis->setLabel("Voltage, V");
-	customPlot->replot();
+    } else {
+        customPlot->yAxis->setRange(doubleSpinBoxUMin->value(), doubleSpinBoxUMax->value());
+    }
+
+    customPlot->xAxis->setLabel("Time, sec");
+    customPlot->yAxis->setLabel("Voltage, V");
+    customPlot->replot();
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>593</width>
-    <height>190</height>
+    <width>600</width>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,13 +17,13 @@
    <iconset resource="resources.qrc">
     <normaloff>:/main/ini.png</normaloff>:/main/ini.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QGroupBox" name="groupBoxSerialPort">
@@ -188,6 +188,16 @@
       <property name="title">
        <string>Plot</string>
       </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBoxLog">
+      <property name="title">
+       <string>Log</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QTextEdit" name="textEditLog"/>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
